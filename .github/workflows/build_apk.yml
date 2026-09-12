@@ -18,9 +18,11 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-      continue-on-error: true
+    - name: Create Missing Gradle Files
+      run: |
+        echo "include ':app'" > settings.gradle
+        echo "buildscript { repositories { google(); mavenCentral() } dependencies { classpath 'com.android.tools.build:gradle:8.1.0' } }" > build.gradle
+        gradle wrapper
 
     - name: Build APK with Gradle
       run: ./gradlew assembleDebug --stacktrace
