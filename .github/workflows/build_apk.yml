@@ -43,11 +43,35 @@ jobs:
 
         echo "include ':app'" > settings.gradle
 
-        echo "buildscript { repositories { google(); mavenCentral() } dependencies { classpath 'com.android.tools.build:gradle:8.1.0' } }" > build.gradle
-        echo "allprojects { repositories { google(); mavenCentral() } }" >> build.gradle
+        # Proper multi-line root build.gradle
+        echo "buildscript {" > build.gradle
+        echo "    repositories {" >> build.gradle
+        echo "        google()" >> build.gradle
+        echo "        mavenCentral()" >> build.gradle
+        echo "    }" >> build.gradle
+        echo "    dependencies {" >> build.gradle
+        echo "        classpath 'com.android.tools.build:gradle:8.1.0'" >> build.gradle
+        echo "    }" >> build.gradle
+        echo "}" >> build.gradle
+        echo "allprojects {" >> build.gradle
+        echo "    repositories {" >> build.gradle
+        echo "        google()" >> build.gradle
+        echo "        mavenCentral()" >> build.gradle
+        echo "    }" >> build.gradle
+        echo "}" >> build.gradle
 
+        # Proper multi-line app/build.gradle
         echo "apply plugin: 'com.android.application'" > app/build.gradle
-        echo "android { compileSdk 34; defaultConfig { applicationId 'com.hanuman.matka'; minSdk 24; targetSdk 34; versionCode 1; versionName '1.0'; } }" >> app/build.gradle
+        echo "android {" >> app/build.gradle
+        echo "    compileSdk 34" >> app/build.gradle
+        echo "    defaultConfig {" >> app/build.gradle
+        echo "        applicationId 'com.hanuman.matka'" >> app/build.gradle
+        echo "        minSdk 24" >> app/build.gradle
+        echo "        targetSdk 34" >> app/build.gradle
+        echo "        versionCode 1" >> app/build.gradle
+        echo "        versionName '1.0'" >> app/build.gradle
+        echo "    }" >> app/build.gradle
+        echo "}" >> app/build.gradle
 
         gradle wrapper --gradle-version 8.1.1 --distribution-type bin
         ./gradlew clean assembleDebug --stacktrace
