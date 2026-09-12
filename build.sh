@@ -1,11 +1,14 @@
 #!/bin/bash
 set -e
 
-rm -rf app settings.gradle build.gradle gradle* gradlew*
+# 1. Sabhi purane aur faltu folders/files ko jad se saaf karo
+rm -rf app settings.gradle build.gradle gradle* gradlew* .gradle
 
+# 2. Bilkul naya clean Android folder structure banao
 mkdir -p app/src/main/java/com/hanuman/matka
 mkdir -p app/src/main/res/values
 
+# 3. MainActivity.java banao
 cat << 'EOF' > app/src/main/java/com/hanuman/matka/MainActivity.java
 package com.hanuman.matka;
 
@@ -20,6 +23,7 @@ public class MainActivity extends Activity {
 }
 EOF
 
+# 4. AndroidManifest.xml banao
 cat << 'EOF' > app/src/main/AndroidManifest.xml
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
@@ -39,33 +43,41 @@ cat << 'EOF' > app/src/main/AndroidManifest.xml
 </manifest>
 EOF
 
+# 5. settings.gradle banao
 cat << 'EOF' > settings.gradle
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+rootProject.name = "Hanuman-matka"
 include ':app'
 EOF
 
+# 6. Root build.gradle banao
 cat << 'EOF' > build.gradle
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:8.1.0'
-    }
-}
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
+// Root build file
 EOF
 
+# 7. app/build.gradle banao (Modern plugins block ke sath)
 cat << 'EOF' > app/build.gradle
-apply plugin: 'com.android.application'
+plugins {
+    id 'com.android.application'
+}
+
 android {
     namespace 'com.hanuman.matka'
     compileSdk 34
+
     defaultConfig {
         applicationId "com.hanuman.matka"
         minSdk 24
@@ -73,9 +85,19 @@ android {
         versionCode 1
         versionName "1.0"
     }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
 }
 EOF
 
-gradle wrapper --gradle-version 8.1.1 --distribution-type bin
-./gradlew clean assembleDebug --stacktrace
+# 8. Gradle wrapper download karke build karo
+wget -q https://services.gradle.org/distributions/gradle-8.5-bin.zip
+unzip -q gradle-8.5-bin.zip
+export PATH="$PWD/gradle-8.5/bin:$PATH"
 
+gradle wrapper --gradle-version 8.5 --distribution-type bin
+./gradlew clean assembleDebug --stacktrace
