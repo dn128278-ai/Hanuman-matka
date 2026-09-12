@@ -18,7 +18,7 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Build APK Direct
+    - name: Setup and Build
       run: |
         echo "include ':app'" > settings.gradle
         
@@ -55,8 +55,10 @@ jobs:
         }
         EOF
 
-        gradle wrapper --gradle-version 8.1.1
-        ./gradlew assembleDebug --stacktrace
+        # Generate wrapper matching the plugin version and force using ./gradlew
+        npx --yes @antfu/ni || true
+        gradle wrapper --gradle-version 8.1.1 --distribution-type bin
+        ./gradlew clean assembleDebug --stacktrace
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
