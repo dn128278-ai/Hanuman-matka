@@ -18,13 +18,33 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Quick Setup and Build
+    - name: Create Proper Gradle Setup
       run: |
         echo "include ':app'" > settings.gradle
-        echo "allprojects { repositories { google(); mavenCentral() } }" > build.gradle
+        
+        # Root build.gradle with correct plugin repository and classpath
+        cat << 'EOF' > build.gradle
+        buildscript {
+            repositories {
+                google()
+                mavenCentral()
+            }
+            dependencies {
+                classpath 'com.android.tools.build:gradle:7.4.2'
+            }
+        }
+        allprojects {
+            repositories {
+                google()
+                mavenCentral()
+            }
+        }
+        EOF
+
         mkdir -p app
         echo "apply plugin: 'com.android.application'" > app/build.gradle
         echo "android { compileSdk 33 }" >> app/build.gradle
+        
         gradle wrapper
         ./gradlew assembleDebug --stacktrace
 
