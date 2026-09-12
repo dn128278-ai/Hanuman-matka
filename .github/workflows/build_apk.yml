@@ -20,81 +20,34 @@ jobs:
 
     - name: Generate Proper Android Structure and Build
       run: |
-        # Create standard Android project layout if missing
         mkdir -p app/src/main/java/com/hanuman/matka
         mkdir -p app/src/main/res/values
-        mkdir -p app/src/main/res/mipmap-hdpi
 
-        # Create a basic MainActivity if none exists
-        if [ ! -f "app/src/main/java/com/hanuman/matka/MainActivity.java" ]; then
-            cat << 'EOF' > app/src/main/java/com/hanuman/matka/MainActivity.java
-            package com.hanuman.matka;
-            import android.app.Activity;
-            import android.os.Bundle;
-            public class MainActivity extends Activity {
-                @Override
-                protected void onCreate(Bundle savedInstanceState) {
-                    super.onCreate(savedInstanceState);
-                }
-            }
-            EOF
-        fi
+        echo "package com.hanuman.matka;" > app/src/main/java/com/hanuman/matka/MainActivity.java
+        echo "import android.app.Activity;" >> app/src/main/java/com/hanuman/matka/MainActivity.java
+        echo "import android.os.Bundle;" >> app/src/main/java/com/hanuman/matka/MainActivity.java
+        echo "public class MainActivity extends Activity {" >> app/src/main/java/com/hanuman/matka/MainActivity.java
+        echo "    @Override protected void onCreate(Bundle b) { super.onCreate(b); }" >> app/src/main/java/com/hanuman/matka/MainActivity.java
+        echo "}" >> app/src/main/java/com/hanuman/matka/MainActivity.java
 
-        # Create AndroidManifest.xml
-        if [ ! -f "app/src/main/AndroidManifest.xml" ]; then
-            cat << 'EOF' > app/src/main/AndroidManifest.xml
-            <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-                package="com.hanuman.matka">
-                <application
-                    android:allowBackup="true"
-                    android:label="Hanuman Matka">
-                    <activity android:name=".MainActivity"
-                        android:exported="true">
-                        <intent-filter>
-                            <action android:name="android.intent.action.MAIN" />
-                            <category android:name="android.intent.category.LAUNCHER" />
-                        </intent-filter>
-                    </activity>
-                </application>
-            </manifest>
-            EOF
-        fi
+        echo '<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.hanuman.matka">' > app/src/main/AndroidManifest.xml
+        echo '    <application android:label="Hanuman Matka">' >> app/src/main/AndroidManifest.xml
+        echo '        <activity android:name=".MainActivity" android:exported="true">' >> app/src/main/AndroidManifest.xml
+        echo '            <intent-filter>' >> app/src/main/AndroidManifest.xml
+        echo '                <action android:name="android.intent.action.MAIN" />' >> app/src/main/AndroidManifest.xml
+        echo '                <category android:name="android.intent.category.LAUNCHER" />' >> app/src/main/AndroidManifest.xml
+        echo '            </intent-filter>' >> app/src/main/AndroidManifest.xml
+        echo '        </activity>' >> app/src/main/AndroidManifest.xml
+        echo '    </application>' >> app/src/main/AndroidManifest.xml
+        echo '</manifest>' >> app/src/main/AndroidManifest.xml
 
-        # Create settings.gradle and root build.gradle
         echo "include ':app'" > settings.gradle
-        
-        cat << 'EOF' > build.gradle
-        buildscript {
-            repositories {
-                google()
-                mavenCentral()
-            }
-            dependencies {
-                classpath 'com.android.tools.build:gradle:8.1.0'
-            }
-        }
-        allprojects {
-            repositories {
-                google()
-                mavenCentral()
-            }
-        }
-        EOF
 
-        # Create app/build.gradle
-        cat << 'EOF' > app/build.gradle
-        apply plugin: 'com.android.application'
-        android {
-            compileSdk 34
-            defaultConfig {
-                applicationId "com.hanuman.matka"
-                minSdk 24
-                targetSdk 34
-                versionCode 1
-                versionName "1.0"
-            }
-        }
-        EOF
+        echo "buildscript { repositories { google(); mavenCentral() } dependencies { classpath 'com.android.tools.build:gradle:8.1.0' } }" > build.gradle
+        echo "allprojects { repositories { google(); mavenCentral() } }" >> build.gradle
+
+        echo "apply plugin: 'com.android.application'" > app/build.gradle
+        echo "android { compileSdk 34; defaultConfig { applicationId 'com.hanuman.matka'; minSdk 24; targetSdk 34; versionCode 1; versionName '1.0'; } }" >> app/build.gradle
 
         gradle wrapper --gradle-version 8.1.1 --distribution-type bin
         ./gradlew clean assembleDebug --stacktrace
