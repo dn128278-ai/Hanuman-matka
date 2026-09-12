@@ -1,10 +1,9 @@
 #!/bin/bash
 set -e
 
-# Purane gradle configuration files ko saaf karo, user ki source files ko safe rakho
 rm -rf settings.gradle build.gradle gradle* gradlew* .gradle
 
-# settings.gradle banao
+# settings.gradle me plugin management add karo taaki plugin mil sake
 cat << 'EOF' > settings.gradle
 pluginManagement {
     repositories {
@@ -24,16 +23,28 @@ rootProject.name = "Hanuman-matka"
 include ':app'
 EOF
 
-# Root build.gradle banao
+# Root build.gradle me Android Gradle Plugin version specify karo
 cat << 'EOF' > build.gradle
-// Root build file
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.1.0'
+    }
+}
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
 EOF
 
-# app/build.gradle banao (aapke package 'com.rudra.virtualgame' ke sath)
+# app/build.gradle ko classic apply plugin ke sath likho taaki version mismatch na ho
 cat << 'EOF' > app/build.gradle
-plugins {
-    id 'com.android.application'
-}
+apply plugin: 'com.android.application'
 
 android {
     namespace 'com.rudra.virtualgame'
