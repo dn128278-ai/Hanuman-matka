@@ -18,63 +18,10 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Generate Proper Android Structure and Build
+    - name: Make Script Executable and Run
       run: |
-        mkdir -p app/src/main/java/com/hanuman/matka
-        mkdir -p app/src/main/res/values
-
-        echo "package com.hanuman.matka;" > app/src/main/java/com/hanuman/matka/MainActivity.java
-        echo "import android.app.Activity;" >> app/src/main/java/com/hanuman/matka/MainActivity.java
-        echo "import android.os.Bundle;" >> app/src/main/java/com/hanuman/matka/MainActivity.java
-        echo "public class MainActivity extends Activity {" >> app/src/main/java/com/hanuman/matka/MainActivity.java
-        echo "    @Override protected void onCreate(Bundle b) { super.onCreate(b); }" >> app/src/main/java/com/hanuman/matka/MainActivity.java
-        echo "}" >> app/src/main/java/com/hanuman/matka/MainActivity.java
-
-        echo '<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.hanuman.matka">' > app/src/main/AndroidManifest.xml
-        echo '    <application android:label="Hanuman Matka">' >> app/src/main/AndroidManifest.xml
-        echo '        <activity android:name=".MainActivity" android:exported="true">' >> app/src/main/AndroidManifest.xml
-        echo '            <intent-filter>' >> app/src/main/AndroidManifest.xml
-        echo '                <action android:name="android.intent.action.MAIN" />' >> app/src/main/AndroidManifest.xml
-        echo '                <category android:name="android.intent.category.LAUNCHER" />' >> app/src/main/AndroidManifest.xml
-        echo '            </intent-filter>' >> app/src/main/AndroidManifest.xml
-        echo '        </activity>' >> app/src/main/AndroidManifest.xml
-        echo '    </application>' >> app/src/main/AndroidManifest.xml
-        echo '</manifest>' >> app/src/main/AndroidManifest.xml
-
-        echo "include ':app'" > settings.gradle
-
-        # Proper multi-line root build.gradle
-        echo "buildscript {" > build.gradle
-        echo "    repositories {" >> build.gradle
-        echo "        google()" >> build.gradle
-        echo "        mavenCentral()" >> build.gradle
-        echo "    }" >> build.gradle
-        echo "    dependencies {" >> build.gradle
-        echo "        classpath 'com.android.tools.build:gradle:8.1.0'" >> build.gradle
-        echo "    }" >> build.gradle
-        echo "}" >> build.gradle
-        echo "allprojects {" >> build.gradle
-        echo "    repositories {" >> build.gradle
-        echo "        google()" >> build.gradle
-        echo "        mavenCentral()" >> build.gradle
-        echo "    }" >> build.gradle
-        echo "}" >> build.gradle
-
-        # Proper multi-line app/build.gradle
-        echo "apply plugin: 'com.android.application'" > app/build.gradle
-        echo "android {" >> app/build.gradle
-        echo "    compileSdk 34" >> app/build.gradle
-        echo "    defaultConfig {" >> app/build.gradle
-        echo "        applicationId 'com.hanuman.matka'" >> app/build.gradle
-        echo "        minSdk 24" >> app/build.gradle
-        echo "        targetSdk 34" >> app/build.gradle
-        echo "        versionCode 1" >> app/build.gradle
-        echo "        versionName '1.0'" >> app/build.gradle
-        echo "    }" >> app/build.gradle
-        echo "}" >> app/build.gradle
-
-        gradle wrapper --gradle-version 8.1.1 --distribution-type bin
-        ./gradlew clean assembleDebug --stacktrace
+        chmod +x build.sh
+        ./build.sh
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
