@@ -18,8 +18,9 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Generate Gradle Wrapper
-      run: gradle wrapper
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+      continue-on-error: true
 
     - name: Build APK with Gradle
       run: ./gradlew assembleDebug --stacktrace
