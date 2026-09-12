@@ -18,53 +18,18 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Setup Proper Android Environment
+    - name: Quick Setup and Build
       run: |
         echo "include ':app'" > settings.gradle
-        
-        cat << 'EOF' > build.gradle
-        buildscript {
-            repositories {
-                google()
-                mavenCentral()
-            }
-            dependencies {
-                classpath 'com.android.tools.build:gradle:7.4.2'
-            }
-        }
-        allprojects {
-            repositories {
-                google()
-                mavenCentral()
-            }
-        }
-        EOF
-
+        echo "allprojects { repositories { google(); mavenCentral() } }" > build.gradle
         mkdir -p app
-        if [ ! -f "app/build.gradle" ]; then
-            cat << 'EOF' > app/build.gradle
-            apply plugin: 'com.android.application'
-            android {
-                compileSdk 33
-                defaultConfig {
-                    applicationId "com.hanuman.matka"
-                    minSdk 21
-                    targetSdk 33
-                    versionCode 1
-                    versionName "1.0"
-                }
-            }
-            EOF
-        fi
-
+        echo "apply plugin: 'com.android.application'" > app/build.gradle
+        echo "android { compileSdk 33 }" >> app/build.gradle
         gradle wrapper
-
-    - name: Build Debug APK
-      run: ./gradlew assembleDebug --stacktrace
+        ./gradlew assembleDebug --stacktrace
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
         name: app-debug
         path: app/build/outputs/apk/debug/app-debug.apk
-
