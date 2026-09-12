@@ -18,11 +18,10 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Create Proper Gradle Setup
+    - name: Setup and Build APK
       run: |
         echo "include ':app'" > settings.gradle
         
-        # Root build.gradle with correct plugin repository and classpath
         cat << 'EOF' > build.gradle
         buildscript {
             repositories {
@@ -42,9 +41,22 @@ jobs:
         EOF
 
         mkdir -p app
-        echo "apply plugin: 'com.android.application'" > app/build.gradle
-        echo "android { compileSdk 33 }" >> app/build.gradle
-        
+        cat << 'EOF' > app/build.gradle
+        plugins {
+            id 'com.android.application'
+        }
+        android {
+            compileSdk 33
+            defaultConfig {
+                applicationId "com.hanuman.matka"
+                minSdk 21
+                targetSdk 33
+                versionCode 1
+                versionName "1.0"
+            }
+        }
+        EOF
+
         gradle wrapper
         ./gradlew assembleDebug --stacktrace
 
