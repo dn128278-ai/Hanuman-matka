@@ -18,8 +18,49 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Setup and Build
+    - name: Generate Proper Android Structure and Build
       run: |
+        # Create standard Android project layout if missing
+        mkdir -p app/src/main/java/com/hanuman/matka
+        mkdir -p app/src/main/res/values
+        mkdir -p app/src/main/res/mipmap-hdpi
+
+        # Create a basic MainActivity if none exists
+        if [ ! -f "app/src/main/java/com/hanuman/matka/MainActivity.java" ]; then
+            cat << 'EOF' > app/src/main/java/com/hanuman/matka/MainActivity.java
+            package com.hanuman.matka;
+            import android.app.Activity;
+            import android.os.Bundle;
+            public class MainActivity extends Activity {
+                @Override
+                protected void onCreate(Bundle savedInstanceState) {
+                    super.onCreate(savedInstanceState);
+                }
+            }
+            EOF
+        fi
+
+        # Create AndroidManifest.xml
+        if [ ! -f "app/src/main/AndroidManifest.xml" ]; then
+            cat << 'EOF' > app/src/main/AndroidManifest.xml
+            <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+                package="com.hanuman.matka">
+                <application
+                    android:allowBackup="true"
+                    android:label="Hanuman Matka">
+                    <activity android:name=".MainActivity"
+                        android:exported="true">
+                        <intent-filter>
+                            <action android:name="android.intent.action.MAIN" />
+                            <category android:name="android.intent.category.LAUNCHER" />
+                        </intent-filter>
+                    </activity>
+                </application>
+            </manifest>
+            EOF
+        fi
+
+        # Create settings.gradle and root build.gradle
         echo "include ':app'" > settings.gradle
         
         cat << 'EOF' > build.gradle
@@ -40,7 +81,7 @@ jobs:
         }
         EOF
 
-        mkdir -p app
+        # Create app/build.gradle
         cat << 'EOF' > app/build.gradle
         apply plugin: 'com.android.application'
         android {
@@ -55,8 +96,6 @@ jobs:
         }
         EOF
 
-        # Generate wrapper matching the plugin version and force using ./gradlew
-        npx --yes @antfu/ni || true
         gradle wrapper --gradle-version 8.1.1 --distribution-type bin
         ./gradlew clean assembleDebug --stacktrace
 
