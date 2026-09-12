@@ -20,14 +20,18 @@ jobs:
 
     - name: Build APK Direct
       run: |
-        # Install Android Build Tools via SDK Manager if needed or use simple debug compilation
-        export ANDROID_HOME=$HOME/android-sdk
-        mkdir -p $ANDROID_HOME
-        
-        # Create minimal valid gradle files that don't trigger dependency handler errors
         echo "include ':app'" > settings.gradle
         
         cat << 'EOF' > build.gradle
+        buildscript {
+            repositories {
+                google()
+                mavenCentral()
+            }
+            dependencies {
+                classpath 'com.android.tools.build:gradle:8.1.0'
+            }
+        }
         allprojects {
             repositories {
                 google()
@@ -38,23 +42,21 @@ jobs:
 
         mkdir -p app
         cat << 'EOF' > app/build.gradle
-        plugins {
-            id 'com.android.application'
-        }
+        apply plugin: 'com.android.application'
         android {
             compileSdk 34
             defaultConfig {
                 applicationId "com.hanuman.matka"
                 minSdk 24
                 targetSdk 34
+                versionCode 1
+                versionName "1.0"
             }
         }
         EOF
 
-        # Use gradle wrapper initialization
-        npx --yes bower || true
-        ./gradlew --version || gradle wrapper --gradle-version 8.4
-        ./gradlew assembleDebug --no-daemon
+        gradle wrapper --gradle-version 8.1.1
+        ./gradlew assembleDebug --stacktrace
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
