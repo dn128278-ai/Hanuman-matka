@@ -18,10 +18,45 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Create Missing Gradle Files
+    - name: Setup Proper Android Environment
       run: |
         echo "include ':app'" > settings.gradle
-        echo "allprojects { repositories { google(); mavenCentral() } }" > build.gradle
+        
+        cat << 'EOF' > build.gradle
+        buildscript {
+            repositories {
+                google()
+                mavenCentral()
+            }
+            dependencies {
+                classpath 'com.android.tools.build:gradle:7.4.2'
+            }
+        }
+        allprojects {
+            repositories {
+                google()
+                mavenCentral()
+            }
+        }
+        EOF
+
+        mkdir -p app
+        if [ ! -f "app/build.gradle" ]; then
+            cat << 'EOF' > app/build.gradle
+            apply plugin: 'com.android.application'
+            android {
+                compileSdk 33
+                defaultConfig {
+                    applicationId "com.hanuman.matka"
+                    minSdk 21
+                    targetSdk 33
+                    versionCode 1
+                    versionName "1.0"
+                }
+            }
+            EOF
+        fi
+
         gradle wrapper
 
     - name: Build Debug APK
@@ -32,3 +67,4 @@ jobs:
       with:
         name: app-debug
         path: app/build/outputs/apk/debug/app-debug.apk
+
