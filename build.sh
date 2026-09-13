@@ -48,7 +48,7 @@ pluginManagement {
     }
 }
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
     repositories {
         google()
         mavenCentral()
@@ -60,24 +60,16 @@ EOF
 
 cat << 'EOF' > build.gradle
 buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
     dependencies {
         classpath 'com.android.tools.build:gradle:8.1.0'
-    }
-}
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
     }
 }
 EOF
 
 cat << 'EOF' > app/build.gradle
-apply plugin: 'com.android.application'
+plugins {
+    id 'com.android.application'
+}
 
 android {
     namespace 'com.rudra.virtualgame'
@@ -99,4 +91,3 @@ export PATH="$PWD/gradle-8.5/bin:$PATH"
 
 gradle wrapper --gradle-version 8.5 --distribution-type bin
 ./gradlew clean assembleDebug --stacktrace
-
